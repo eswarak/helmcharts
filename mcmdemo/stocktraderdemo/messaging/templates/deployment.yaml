@@ -1,0 +1,76 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "messaging.fullname" . }}
+  labels:
+    app: {{ template "messaging.name" . }}
+    chart: {{ template "messaging.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    solution: "stock-trader"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "messaging.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "messaging.name" . }}
+        release: {{ .Release.Name }}
+        solution: stock-trader
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MQ_ID
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: id
+            - name: MQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: pwd
+            - name: MQ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: host
+            - name: MQ_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: port
+            - name: MQ_CHANNEL
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: channel
+            - name: MQ_QUEUE_MANAGER
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: queue-manager
+            - name: MQ_QUEUE
+              valueFrom:
+                secretKeyRef:
+                  name: mq
+                  key: queue
+            - name: JWT_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: audience
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: issuer
+          ports:
+            - containerPort: 9080
+            - containerPort: 9443

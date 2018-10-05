@@ -1,0 +1,21 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "loyalty-level.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "loyalty-level.name" . }}
+    chart: {{ template "loyalty-level.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /loyalty-level/.*
+        backend:
+          serviceName: loyalty-level-service
+          servicePort: 9443
+{{- end }}

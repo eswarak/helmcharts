@@ -1,0 +1,17 @@
+apiVersion: mcm.ibm.com/v1alpha1
+kind: Deployable
+metadata:
+  name: {{ template "stocktraderapp.fullname" . }}
+  labels:
+    name: {{ template "stocktraderapp.fullname" . }}
+    app: {{ template "stocktraderapp.name" . }}
+    servicekind: ApplicationService
+    hcmappname: {{ template "stocktraderapp.name" . }}
+    placementpolicy: {{ template "stocktraderapp.name" . }} 
+
+spec:
+  deployer:
+    kind: helm
+    helm:
+      chartURL: http://10.0.0.1:3080/charts/trader-0.1.0.tgz
+      namespace: {{ .Values.appInClusterNamespace }}

@@ -1,0 +1,16 @@
+# Default values for stock-quote.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ibmstocktrader/stock-quote
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+
+ingress:
+  enabled: true

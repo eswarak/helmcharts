@@ -1,0 +1,55 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "notification-slack.fullname" . }}
+  labels:
+    app: {{ template "notification-slack.name" . }}
+    chart: {{ template "notification-slack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    solution: "stock-trader"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "notification-slack.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "notification-slack.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: OW_URL
+              valueFrom:
+                secretKeyRef:
+                  name: openwhisk
+                  key: url
+            - name: OW_ID
+              valueFrom:
+                secretKeyRef:
+                  name: openwhisk
+                  key: id
+            - name: OW_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openwhisk
+                  key: pwd
+            - name: JWT_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: audience
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: issuer
+          ports:
+            - containerPort: 9080
+            - containerPort: 9443

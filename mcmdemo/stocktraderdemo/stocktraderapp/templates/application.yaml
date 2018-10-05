@@ -1,0 +1,14 @@
+apiVersion: mcm.ibm.com/v1alpha1
+kind: Application
+metadata:
+  name: {{ template "stocktraderapp.fullname" . }}
+  labels:
+    app: {{ template "stocktraderapp.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    name: {{ template "stocktraderapp.fullname" . }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "stocktraderapp.name" . }}

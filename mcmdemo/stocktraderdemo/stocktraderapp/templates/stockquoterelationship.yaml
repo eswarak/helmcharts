@@ -1,0 +1,17 @@
+apiVersion: mcm.ibm.com/v1alpha1
+kind: ApplicationRelationship
+metadata:
+  name: {{ template "stocktraderapp.fullname" . }}-stock-quote
+  labels:
+    app: {{ template "stocktraderapp.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  destination:
+    kind: Deployable
+    name: {{ template "stocktraderapp.fullname" . }}-stock-quote
+  source:
+    kind: Deployable
+    name: {{ template "stocktraderapp.fullname" . }}-portfolio
+  type: usesCreated

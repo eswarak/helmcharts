@@ -1,0 +1,42 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "trader.fullname" . }}
+  labels:
+    app: {{ template "trader.name" . }}
+    chart: {{ template "trader.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    solution: "stack-trader"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "trader.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "trader.name" . }}
+        release: {{ .Release.Name }}
+        solution: stock-trader
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: JWT_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: audience
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: issuer
+          ports:
+            - containerPort: 9080
+            - containerPort: 9443
+

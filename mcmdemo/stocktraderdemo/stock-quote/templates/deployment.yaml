@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "stock-quote.fullname" . }}
+  labels:
+    app: {{ template "stock-quote.name" . }}
+    chart: {{ template "stock-quote.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    solution: "stack-trader"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "stock-quote.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "stock-quote.name" . }}
+        release: {{ .Release.Name }}
+        solution: stock-trader
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: redis
+                  key: url
+            - name: JWT_AUDIENCE
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: audience
+            - name: JWT_ISSUER
+              valueFrom:
+                secretKeyRef:
+                  name: jwt
+                  key: issuer
+          ports:
+            - containerPort: 9080
+            - containerPort: 9443
+

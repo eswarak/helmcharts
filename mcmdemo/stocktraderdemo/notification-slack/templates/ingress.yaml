@@ -1,0 +1,21 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "notification-slack.fullname" . -}}
+{{- $ingressPath := .Values.ingress.path -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    app: {{ template "notification-slack.name" . }}
+    chart: {{ template "notification-slack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /notification
+        backend:
+          serviceName: notification-service
+          servicePort: 9443
+{{- end }}

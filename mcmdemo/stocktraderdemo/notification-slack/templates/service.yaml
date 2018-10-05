@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  labels:
+    app: {{ template "notification-slack.name" . }}
+    chart: {{ template "notification-slack.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9080
+      targetPort: 9080
+    - name: https
+      protocol: TCP
+      port: 9443
+      targetPort: 9443
+  selector:
+    app: {{ template "notification-slack.name" . }}
+    release: {{ .Release.Name }}
